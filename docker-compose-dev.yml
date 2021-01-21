@@ -1,0 +1,20 @@
+mysql:
+  image: mysql:5.7
+  container_name: mysql-server-dev
+  command:
+    ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+  ports:
+    - 3306:3306
+  environment:
+    - MYSQL_ROOT_PASSWORD=123456
+    - MYSQL_DATABASE=egg_ts_dome
+
+redis:
+  image: redis:3.2
+  container_name: redis-server-dev
+  ports:
+    - 6379:6379
+  environment:
+    - PASSWORD=123456
+  volumes:
+    - ./redis:/data
