@@ -44,3 +44,7 @@ $ yarn dev
 ```
 
 在浏览器输入提示的路由 http://127.0.0.1:7001
+
+---
+
+下一节 [docker 构建开发依赖的 mysql 和 redis](https://github.com/ThomasLiu/egg_ts_showcase/blob/learn_2_docker_dev/doc/docker_dev.md)
