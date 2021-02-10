@@ -41,3 +41,8 @@ redis:
 ```
 
 然后就可以 使用 `yarn run docker-up-dev`
+
+
+---
+
+下一节 [添加 sequelize 做mysql 的orm](https://github.com/ThomasLiu/egg_ts_showcase/blob/learn_3_sequelize/doc/sequelize.md)
