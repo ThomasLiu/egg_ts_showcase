@@ -6,7 +6,7 @@ coverage/
 run/
 logs/
 .DS_Store
-.vscode
+# .vscode
 *.swp
 *.lock
 *.js

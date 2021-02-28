@@ -1,0 +1,4 @@
+
+GET {{host}}/users
+Content-Type: application/json
+

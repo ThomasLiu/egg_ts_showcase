@@ -1,5 +1,7 @@
 # 添加 sequelize 做mysql 的orm
 
+## Sequelize
+
 根据官方的介绍文档[egg.js - Sequelize](https://eggjs.org/zh-cn/tutorials/sequelize.html)
 
 和官方的例子[sequelize-ts](https://github.com/eggjs/examples/tree/master/sequelize-ts)
@@ -46,7 +48,9 @@ config.sequelize = {
 
 这里统一使用环境变量优先加开发默认值的方式，这样在服务器就可以更好的控制了
 
-由于是ts的项目，如果想像官方文档那样使用Migrations来管理数据库定义和model的更新的话，[`sequelize-cli`](https://github.com/sequelize/cli) 也需要换成对应的ts版本，同样在 的[fork](https://github.com/sequelize/cli/network/members)上找最多人用的 哪个 [sequelize-cli-typescript](https://github.com/douglas-treadwell/sequelize-cli-typescript)，但是这个分支很久没有维护了，sequelize-cli 新版本会导致执行不了。需要试试其他新的分支，其中[这个](https://github.com/sutanlab/sequelize-cli-typescript)是目前可以使用
+## Migrations
+
+由于是ts的项目，如果想像官方文档那样使用`Migrations`来管理数据库定义和model的更新的话，[`sequelize-cli`](https://github.com/sequelize/cli) 也需要换成对应的ts版本，同样在 的[fork](https://github.com/sequelize/cli/network/members)上找最多人用的 哪个 [sequelize-cli-typescript](https://github.com/douglas-treadwell/sequelize-cli-typescript)，但是这个分支很久没有维护了，sequelize-cli 新版本会导致执行不了。需要试试其他新的分支，其中[这个](https://github.com/sutanlab/sequelize-cli-typescript)是目前可以使用
 
 ```bash
 yarn -D add @sutanlab/sequelize-cli-typescript
@@ -216,5 +220,124 @@ yarn sequelize db:migrate
 }
 ```
 
+## Model
 
-接着就是对应的 `model` 了
+接着就是对应的 `model` 了，创建 `app/model/user.ts`
+
+```js
+import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
+@Table({
+  modelName: 'user',
+})
+export class User extends Model<User> {
+
+  @PrimaryKey
+  @AutoIncrement
+  @Column({
+    type: DataType.INTEGER(11),
+    comment: '用户ID',
+  })
+  id: number;
+
+  @Column({
+    comment: '用户姓名',
+  })
+  name: string;
+
+  @Column({
+    type: DataType.INTEGER(3),
+    comment: '年龄',
+  })
+  age: number;
+
+  @Column({
+    field: 'created_at',
+  })
+  createdAt: Date;
+
+  @Column({
+    field: 'updated_at',
+  })
+  updatedAt: Date;
+}
+export default () => User;
+```
+
+创建一个 `app/controller/users.ts` 
+
+```js
+import { Controller } from 'egg';
+
+const toInt = str => {
+  if (typeof str === 'number') return str;
+  if (!str) return str;
+  return parseInt(str, 10) || 0;
+};
+
+export default class UserController extends Controller {
+  public async index() {
+    const { ctx } = this;
+    const { query, model: {
+      User,
+    } } = ctx;
+    const { limit = 10, offset = 0 } = query;
+    ctx.body = await User.findAll({
+      limit: toInt(limit), offset: toInt(offset),
+    });
+  }
+}
+
+```
+
+在 `app/router.ts` 中添加对应的路由
+
+```js
+import { Application } from 'egg';
+
+export default (app: Application) => {
+  const { controller, router } = app;
+
+  router.get('/', controller.home.index);
+
+  router.resources('users', '/users', controller.users);
+};
+
+```
+
+## 调试
+
+然后可以运行项目看看效果
+
+```bash
+yarn dev
+```
+
+你可以通过在浏览器上请求，或者可以使用 `REST Client` VS code 的一个接口调试插件。这样就可以编写`.http` 的文件，进行接口调试，同时也可以当作简单的接口文档，一举二得。
+
+创建文件 `http/users.http`
+
+```http
+
+GET {{host}}/users
+Content-Type: application/json
+
+```
+
+同时可以通过环境变量方便的切换接口的环境，创建/修改 `.vscode/settings.json`
+
+```json
+{
+  "prettier.disableLanguages": ["typescript", "typescriptreact"],
+  "cSpell.words": ["autod"],
+  "rest-client.environmentVariables": {
+    "local": {
+      "host": "http://127.0.0.1:7001"
+    },
+  }
+}
+```
+
+然后使用 快捷键 `command + shift + p` 选择 local 的环境，回到 `http/users.http` 文件，可以点击 `Send Request` 就可以请求接口，看接口的返回结果了
+
+## 测试
+

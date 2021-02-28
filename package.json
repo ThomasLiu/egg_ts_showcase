@@ -24,7 +24,6 @@
     "db:up": "yarn tsc && yarn sequelize db:migrate && yarn clean",
     "db:undo:all": "yarn tsc && yarn sequelize db:migrate:undo:all && yarn clean",
     "db:undo": "yarn tsc && yarn sequelize db:migrate:undo && yarn clean"
-
   },
   "dependencies": {
     "egg": "^2.6.1",
@@ -44,6 +43,7 @@
     "egg-mock": "^3.16.0",
     "eslint": "^6.7.2",
     "eslint-config-egg": "^8.0.0",
+    "factory-girl": "^5.0.4",
     "tslib": "^1.9.0",
     "typescript": "^3.0.0"
   },

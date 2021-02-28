@@ -1,0 +1,9 @@
+{
+  "prettier.disableLanguages": ["typescript", "typescriptreact"],
+  "cSpell.words": ["autod"],
+  "rest-client.environmentVariables": {
+    "local": {
+      "host": "http://127.0.0.1:7001"
+    },
+  }
+}
