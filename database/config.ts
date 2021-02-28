@@ -18,6 +18,9 @@ const config = {
 module.exports = {
   config,
   development: config,
-  test: config,
+  test: {
+    ...config,
+    database: `${config.database}_test`,
+  },
   production: config,
 };

@@ -339,5 +339,134 @@ Content-Type: application/json
 
 然后使用 快捷键 `command + shift + p` 选择 local 的环境，回到 `http/users.http` 文件，可以点击 `Send Request` 就可以请求接口，看接口的返回结果了
 
-## 测试
+## 单元测试
 
+正如egg的官方文档那样，这里可以加入 [`factory-girl`](https://github.com/petejkim/factory-lady) 来做单元测试。
+
+```
+yarn -D add factory-lady
+```
+
+然后修改 `database/config.ts` 的test配置部分
+
+```js
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+const packageJson = require('../package.json');
+const { name: database } = packageJson;
+
+const config = {
+  dialect: 'mysql',
+  host: process.env.EGG_MYSQL_SERVER_PORT_3306_TCP_ADDR || '127.0.0.1',
+  port: process.env.EGG_MYSQL_SERVER_PORT_3306_TCP_PORT || '3306',
+  database: process.env.EGG_MYSQL_SERVER_ENV_MYSQL_DATABASE || database,
+  username: process.env.EGG_MYSQL_SERVER_ENV_MYSQL_USERNAME || 'root',
+  password: process.env.EGG_MYSQL_SERVER_ENV_MYSQL_ROOT_PASSWORD || '123456',
+  dialectOptions: {
+    bigNumberStrings: true,
+  },
+};
+
+module.exports = {
+  config,
+  development: config,
+  test: {
+    ...config,
+    database: `${config.database}_test`,
+  },
+  production: config,
+};
+
+```
+
+同时添加一个新的测试才使用的 config 配置 `config/config.test.ts`
+
+```js
+/* eslint-disable @typescript-eslint/no-var-requires */
+import { EggAppConfig, PowerPartial } from 'egg';
+const { test: sequelizeConfig } = require('../database/config');
+
+
+export default () => {
+  const config: PowerPartial<EggAppConfig> = {
+    sequelize: {
+      ...sequelizeConfig,
+      timezone: '+08:00',
+    },
+  };
+  return config;
+};
+```
+
+然后在 `test` 文件夹内添加 `factory-girl` 的相关配置,创新文件 `test/factories.ts`
+
+由于 `factory-girl` 还没有做ts的支持，所以这里把我们用到的部分方法定义一下，这样ts构建的时候才可以通过eslint的检查
+
+```js
+import { factory } from 'factory-girl';
+import { MockApplication } from 'egg-mock';
+
+interface Factory {
+  createMany(modelName: string, num: number): void
+  define(modelName: string, model: any, initObj: any): void
+  sequence(modelKey: string, initFunc: void)
+}
+
+export default (app: MockApplication) => {
+  // 可以通过 app.factory 访问 factory 实例
+  app.factory = factory;
+
+  const { model: {
+    User,
+  } } = app;
+
+  // 定义 user 和默认数据
+  factory.define('user', User, {
+    name: factory.sequence('User.name', n => `name_${n}`),
+    age: 18,
+  });
+};
+
+
+declare module 'egg-mock' {
+  export interface MockApplication {
+    factory: Factory
+  }
+}
+```
+
+然后就是编写我们的单元测试，创建文件 `test/app/controller/users.test.ts`，我们通过`factory-girl` 构建3条测试用的数据，然后再通过我们之前写的 `GET /users`的请求调用一下，这里把body的内容打印一下出来，方便看效果。
+
+```js
+import * as assert from 'assert';
+import { app } from 'egg-mock/bootstrap';
+
+describe('test/app/controller/users.test.ts', () => {
+  it('should GET /users', async () => {
+    await app.factory.createMany('user', 3);
+    const res = await app.httpRequest().get('/users?limit=2');
+    assert(res.status === 200);
+    assert(res.body.length === 2);
+    assert(res.body[0].name);
+    assert(res.body[0].age);
+    console.log(JSON.stringify(res.body));
+  });
+});
+
+```
+
+最后在 `package.json` 中把 `ci` 的命令修改一下，留意这里使用`NODE_ENV`把环境变量改成`test`
+
+```json
+{
+  "scripts": {
+    "ci": "yarn lint && yarn tsc && NODE_ENV=test yarn sequelize db:create && NODE_ENV=test yarn sequelize db:migrate && yarn cov && yarn clean"
+  } 
+}
+```
+
+最后在控制台运行一下 ci 的命令看看效果吧！
+
+```bash
+yarn ci
+```
