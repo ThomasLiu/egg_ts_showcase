@@ -20,24 +20,31 @@
     "autod": "autod",
     "lint": "eslint . --ext .ts",
     "clean": "ets clean",
-    "docker-up-dev": "docker-compose -f docker-compose-dev.yml -p egg_ts_dome_dev up -d"
+    "docker-up-dev": "docker-compose -f docker-compose-dev.yml -p egg_ts_showcase_dev up -d",
+    "db:up": "yarn tsc && yarn sequelize db:migrate && yarn clean",
+    "db:undo:all": "yarn tsc && yarn sequelize db:migrate:undo:all && yarn clean",
+    "db:undo": "yarn tsc && yarn sequelize db:migrate:undo && yarn clean"
+
   },
   "dependencies": {
     "egg": "^2.6.1",
-    "egg-scripts": "^2.6.0"
+    "egg-scripts": "^2.6.0",
+    "egg-sequelize-ts": "^0.2.3-0",
+    "mysql2": "^2.2.5"
   },
   "devDependencies": {
+    "@sutanlab/sequelize-cli-typescript": "^5.1.3",
     "@types/mocha": "^2.2.40",
     "@types/node": "^7.0.12",
     "@types/supertest": "^2.0.0",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
-    "egg-ci": "^1.8.0",
     "egg-bin": "^4.11.0",
+    "egg-ci": "^1.8.0",
     "egg-mock": "^3.16.0",
-    "tslib": "^1.9.0",
     "eslint": "^6.7.2",
     "eslint-config-egg": "^8.0.0",
+    "tslib": "^1.9.0",
     "typescript": "^3.0.0"
   },
   "engines": {
@@ -50,7 +57,9 @@
     "type": "git",
     "url": ""
   },
-  "eslintIgnore": ["coverage"],
+  "eslintIgnore": [
+    "coverage"
+  ],
   "author": "Thomas Lu",
   "license": "MIT"
 }

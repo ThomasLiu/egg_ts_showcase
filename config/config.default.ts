@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { EggAppConfig, EggAppInfo, PowerPartial } from 'egg';
+const { config: sequelizeConfig } = require('../database/config');
+
 
 export default (appInfo: EggAppInfo) => {
   const config = {} as PowerPartial<EggAppConfig>;
@@ -13,6 +16,11 @@ export default (appInfo: EggAppInfo) => {
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,
+
+    sequelize: {
+      ...sequelizeConfig,
+      timezone: '+08:00',
+    },
   };
 
   // the return config will combines to EggAppConfig

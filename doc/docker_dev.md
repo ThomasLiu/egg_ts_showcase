@@ -14,7 +14,7 @@ mysql:
     - 3306:3306
   environment:
     - MYSQL_ROOT_PASSWORD=123456
-    - MYSQL_DATABASE=egg_ts_dome
+    - MYSQL_DATABASE=egg_ts_showcase
 
 redis:
   image: redis:3.2
@@ -34,7 +34,7 @@ redis:
   ...
   "scripts": {
     ...
-    "docker-up-dev": "docker-compose -f docker-compose-dev.yml -p egg_ts_dome_dev up -d",
+    "docker-up-dev": "docker-compose -f docker-compose-dev.yml -p egg_ts_showcase_dev up -d",
   }
 }
 

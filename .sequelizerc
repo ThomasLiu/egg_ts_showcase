@@ -1,0 +1,16 @@
+'use strict';
+
+const path = require('path');
+
+const migrationsPath = path.join(__dirname, 'database/migrations')
+
+module.exports = {
+  config: path.join(__dirname, 'database/config.ts'),
+  'migrations-path': migrationsPath,
+  'migrations-source-path': migrationsPath,
+  'migrations-compiled-path': migrationsPath,
+  'seeders-path': path.join(__dirname, 'database/seeders'),
+  'models-path': path.join(__dirname, 'app/model'),
+};
+
+
