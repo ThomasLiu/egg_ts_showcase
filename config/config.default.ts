@@ -21,6 +21,11 @@ export default (appInfo: EggAppInfo) => {
       ...sequelizeConfig,
       timezone: '+08:00',
     },
+
+    typeGraphQL: {
+      router: '/graphql',
+      dateScalarMode: 'isoDate',
+    },
   };
 
   // the return config will combines to EggAppConfig

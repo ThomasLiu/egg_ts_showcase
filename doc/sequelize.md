@@ -470,3 +470,8 @@ describe('test/app/controller/users.test.ts', () => {
 ```bash
 yarn ci
 ```
+
+
+---
+
+下一节 [添加 graphql](https://github.com/ThomasLiu/egg_ts_showcase/blob/learn_4_graphql/doc/graphql.md)

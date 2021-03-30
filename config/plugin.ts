@@ -11,6 +11,11 @@ const plugin: EggPlugin = {
     enable: true,
     package: 'egg-sequelize-ts',
   },
+
+  typeGraphQL: {
+    enable: true,
+    package: 'egg-type-graphql',
+  },
 };
 
 export default plugin;
