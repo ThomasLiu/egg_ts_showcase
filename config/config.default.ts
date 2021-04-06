@@ -17,6 +17,12 @@ export default (appInfo: EggAppInfo) => {
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,
 
+    security: {
+      csrf: {
+        ignore: /^\/graphql/,
+      },
+    },
+
     sequelize: {
       ...sequelizeConfig,
       timezone: '+08:00',

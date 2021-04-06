@@ -1,5 +1,6 @@
 import { AutoIncrement, Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
-import { Field, ObjectType, ID } from 'type-graphql';
+import { Field, ObjectType, ID, InputType } from 'type-graphql';
+
 @ObjectType({ description: 'This is User Type' })
 @Table({
   modelName: 'user',
@@ -15,7 +16,7 @@ export class User extends Model<User> {
   })
   id: number;
 
-  @Field({ nullable: true, description: '用户姓名' })
+  @Field({ description: '用户姓名' })
   @Column({
     comment: '用户姓名',
   })
@@ -26,7 +27,7 @@ export class User extends Model<User> {
     type: DataType.INTEGER(3),
     comment: '年龄',
   })
-  age: number;
+  age?: number;
 
   @Field({ nullable: true, description: '创建时间' })
   @Column({
@@ -40,4 +41,14 @@ export class User extends Model<User> {
   })
   updatedAt: Date;
 }
+
+@InputType()
+export class UserInput implements Partial<User> {
+  @Field()
+  name: string;
+
+  @Field({ nullable: true })
+  age?: number;
+}
+
 export default () => User;
